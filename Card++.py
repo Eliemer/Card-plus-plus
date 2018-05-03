@@ -12,6 +12,7 @@ tokens = [
     'DIVIDE',
     'LPAREN',
     'RPAREN',
+    'EQUALS',
     'COMA',
     'COLON',
     'SEMICOLON',
