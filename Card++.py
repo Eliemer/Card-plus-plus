@@ -10,8 +10,6 @@ tokens = [
     'MINUS',
     'TIMES',
     'DIVIDE',
-    'TRUE',
-    'FALSE',
     'LPAREN',
     'RPAREN',
     'LBRACKET',
@@ -36,10 +34,14 @@ reserved = {
     'Action' : 'ACTION',
     'Actions' : 'ACTIONS',
     'Rule' : 'RULE',
-    'Rules' : 'RULES'
+    'Rules' : 'RULES',
+    'True' : 'TRUE',
+    'False' : 'FALSE'
 }
 
 operators = {
+    'And' : 'AND',
+    'Or' : 'OR',
     'For' : 'FOR',
     'In' : 'IN',
     'To' : 'TO',
@@ -58,8 +60,6 @@ t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
-t_TRUE = 'True'
-t_FALSE = 'False'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACKET = r'\{'
@@ -131,6 +131,7 @@ that >= 2
 precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE'),
+    ('left', 'OR', 'AND'),
     ('right', 'UMINUS'),
     ('right', 'UPLUS')
 )
@@ -141,11 +142,24 @@ def p_statement_assign(t):
     'statement : IDENTIFIER EQUALS expression'
     identifiers[t[1]] = t[3]
 
+# def p_code_block_assign(t):
+#     'block : IDENTIFIER LBRACKET expression RBRACKET'
+#     identifiers[t[1]] = t[3]
+
 
 def p_statement_expr(t):
     '''statement : expression
-                 | boolean_statement'''
+                 | boolean_and_or'''
     print(t[1])
+
+def p_boolean_and_or_operations(t):
+    '''boolean_and_or : boolean_statement
+                      | boolean_statement AND boolean_statement
+                      | boolean_statement OR boolean_statement'''
+    if t[2] == 'And':
+        t[0] = t[1] and t[3]
+    elif t[2] == 'Or':
+        t[0] = t[1] or t[3]
 
 def p_boolean_statement(t):
     '''boolean_statement : TRUE
@@ -193,8 +207,8 @@ def p_expression_uplus(t):
     'expression : PLUS expression %prec UPLUS'
     t[0] = t[2]
 
-def p_expression_group(t):
-    'expression : LPAREN expression RPAREN'
+def p_statement_group(t):
+    'statement : LPAREN statement RPAREN'
     t[0] = t[2]
 
 def p_expression_number(t):
@@ -211,10 +225,7 @@ def p_expression_identifier(t):
 
 # def p_list(t):
 #     '''list : expression'''
-#
-# def p_parenthesis_expression(t):
-#     'expression : LPAREN expression RPAREN'
-#     t[0] = t[2]
+
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)
