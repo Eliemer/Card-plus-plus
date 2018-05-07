@@ -139,8 +139,10 @@ precedence = (
 identifiers = {}
 
 def p_statement_assign(t):
-    'statement : IDENTIFIER EQUALS expression'
+    '''statement : IDENTIFIER EQUALS expression
+                 | IDENTIFIER EQUALS boolean_and_or'''
     identifiers[t[1]] = t[3]
+    print(t[3])
 
 # def p_code_block_assign(t):
 #     'block : IDENTIFIER LBRACKET expression RBRACKET'
@@ -156,7 +158,9 @@ def p_boolean_and_or_operations(t):
     '''boolean_and_or : boolean_statement
                       | boolean_statement AND boolean_statement
                       | boolean_statement OR boolean_statement'''
-    if t[2] == 'And':
+    if len(t) == 2:
+        t[0] = t[1]
+    elif t[2] == 'And':
         t[0] = t[1] and t[3]
     elif t[2] == 'Or':
         t[0] = t[1] or t[3]
@@ -207,9 +211,61 @@ def p_expression_uplus(t):
     'expression : PLUS expression %prec UPLUS'
     t[0] = t[2]
 
-def p_statement_group(t):
-    'statement : LPAREN statement RPAREN'
+def p_expression_tuple(t):
+    'expression : tuple_expressions'
+    t[0] = t[1]
+
+def p_tuple_expressions(t):
+    '''tuple_expressions : tuple_expression
+                         | tuple_expressions COMA tuple_expression'''
+    if len(t) == 2:
+        t[0] = t[1]
+    else:
+        t[0] = t[1] + (t[3],)
+
+def p_tuple_expression(t):
+    '''tuple_expression : LPAREN tuple_content RPAREN'''
     t[0] = t[2]
+
+def p_tuple_content(t):
+    '''tuple_content :
+                     | tuple_content COMA tuple_item
+                     | tuple_item'''
+    if len(t) == 1:
+        t[0] = ()
+    elif len(t) == 2:
+        t[0] = (t[1],)
+    else:
+        t[0] = t[1] + (t[3],)
+
+def p_tuple_item(t):
+    '''tuple_item : expression
+                  | boolean_and_or'''
+    t[0] = t[1]
+
+def p_expression_list(t):
+    'expression : list_expression'
+    t[0] = t[1]
+
+def p_list_expression(t):
+    '''list_expression : LBRACKET list_content RBRACKET'''
+    t[0] = t[2]
+
+def p_list_content(t):
+    '''list_content :
+                    | list_content COMA list_item
+                    | list_item '''
+    if len(t) == 1:
+        t[0] = []
+    elif len(t) == 2:
+        t[0] = [t[1]]
+    else:
+        t[0] = t[1] + [t[3]]
+
+def p_list_item(t):
+    '''list_item : expression
+                 | boolean_and_or'''
+    t[0] = t[1]
 
 def p_expression_number(t):
     'expression : NUMBER'
