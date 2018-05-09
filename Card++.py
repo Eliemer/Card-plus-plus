@@ -6,6 +6,7 @@ import ply.yacc as yacc
 # List of tokens
 tokens = [
     'NUMBER',
+    'STRING',
     'PLUS',
     'MINUS',
     'TIMES',
@@ -14,6 +15,8 @@ tokens = [
     'RPAREN',
     'LBRACKET',
     'RBRACKET',
+    'LSBRACKET',
+    'RSBRACKET',
     'LTHAN',
     'GTHAN',
     'LTHANOREQUALS',
@@ -64,6 +67,8 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACKET = r'\{'
 t_RBRACKET = r'\}'
+t_LSBRACKET = r'\['
+t_RSBRACKET = r'\]'
 t_LTHAN = r'<'
 t_GTHAN = r'>'
 t_LTHANOREQUALS = r'\<\='
@@ -83,6 +88,13 @@ def t_NUMBER(t):
         t.value = 0
     return t
 
+def t_STRING(t):
+    '\"([^"])*\"'
+    try:
+        t.value = str(t.value)
+    except ValueError:
+        print("Line %d: String %s is poorly formatted" % (t.lineno, t.value))
+    return t
 
 def t_IDENTIFIER(t):
     r'[a-zA-Z0-9]+'
@@ -107,14 +119,11 @@ lexer = lex.lex()
 
 # TEST DATA
 data = '''
-Deck { a, b, c, d, e}
-
-this == 3
-that >= 2
+"This is a string"
 '''
 
 # lex.input(data)
-
+#
 # while 1:
 #     tok = lex.token()
 #     if not tok: break
@@ -140,9 +149,15 @@ identifiers = {}
 
 def p_statement_assign(t):
     '''statement : IDENTIFIER EQUALS expression
-                 | IDENTIFIER EQUALS boolean_and_or'''
+                 | IDENTIFIER EQUALS boolean_and_or
+                 | IDENTIFIER EQUALS string'''
     identifiers[t[1]] = t[3]
     print(t[3])
+
+def p_statemtent_return_index(t):
+    '''statement : IDENTIFIER LSBRACKET NUMBER RSBRACKET'''
+    t[0] = identifiers[t[1]][t[3]]
+    print(t[0])
 
 # def p_code_block_assign(t):
 #     'block : IDENTIFIER LBRACKET expression RBRACKET'
@@ -151,7 +166,8 @@ def p_statement_assign(t):
 
 def p_statement_expr(t):
     '''statement : expression
-                 | boolean_and_or'''
+                 | boolean_and_or
+                 | string'''
     print(t[1])
 
 def p_boolean_and_or_operations(t):
@@ -188,6 +204,9 @@ def p_boolean_statement(t):
     elif t[2] == '<=':
         t[0] = t[1] <= t[3]
 
+def p_string_statement(t):
+    '''string : STRING'''
+    t[0] = t[1]
 
 def p_expression_binary_operations(t):
     '''expression : expression PLUS expression
@@ -212,19 +231,12 @@ def p_expression_uplus(t):
     t[0] = t[2]
 
 def p_expression_tuple(t):
-    'expression : tuple_expressions'
+    'expression : tuple_expression'
     t[0] = t[1]
 
-def p_tuple_expressions(t):
-    '''tuple_expressions : tuple_expression
-                         | tuple_expressions COMA tuple_expression'''
-    if len(t) == 2:
-        t[0] = t[1]
-    else:
-        t[0] = t[1] + (t[3],)
-
 def p_tuple_expression(t):
-    '''tuple_expression : LPAREN tuple_content RPAREN'''
+    '''tuple_expression : LPAREN tuple_content RPAREN
+                        | LPAREN tuple_expression RPAREN COMA tuple_expression'''
     t[0] = t[2]
 
 def p_tuple_content(t):
@@ -240,15 +252,20 @@ def p_tuple_content(t):
 
 def p_tuple_item(t):
     '''tuple_item : expression
-                  | boolean_and_or'''
+                  | boolean_and_or
+                  | string'''
     t[0] = t[1]
 
 def p_expression_list(t):
-    'expression : list_expression'
-    t[0] = t[1]
+    '''expression : list_expression'''
+    if len(t) == 2:
+        t[0] = t[1]
+    else:
+        t[0] = [t[1], t[3]]
 
 def p_list_expression(t):
-    '''list_expression : LBRACKET list_content RBRACKET'''
+    '''list_expression : LBRACKET list_content RBRACKET
+                       | LBRACKET list_expression RBRACKET COMA list_expression'''
     t[0] = t[2]
 
 def p_list_content(t):
@@ -264,7 +281,8 @@ def p_list_content(t):
 
 def p_list_item(t):
     '''list_item : expression
-                 | boolean_and_or'''
+                 | boolean_and_or
+                 | string'''
     t[0] = t[1]
 
 def p_expression_number(t):
