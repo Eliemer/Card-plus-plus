@@ -146,6 +146,7 @@ precedence = (
 )
 
 identifiers = {}
+rules = {}
 
 def p_statement_assign(t):
     '''statement : IDENTIFIER EQUALS expression
@@ -153,6 +154,22 @@ def p_statement_assign(t):
                  | IDENTIFIER EQUALS string'''
     identifiers[t[1]] = t[3]
     print(t[3])
+
+def p_rule_statement_assign(t):
+    '''rule_statement : RULE IDENTIFIER string
+                      | RULE IDENTIFIER
+                      | RULE'''
+    if len(t) == 2:
+        print("Empty Rule Declaration")
+    elif len(t) == 3:
+        t[0] = rules[t[2]]
+    elif len(t) == 4:
+        try:
+            rules[t[2]] = t[3]
+            identifiers[t[2]] = rules[t[2]]
+            t[0] = rules[t[2]]
+        except AttributeError:
+            print("Empty Rule Declaration")
 
 def p_statemtent_return_index(t):
     '''statement : IDENTIFIER LSBRACKET NUMBER RSBRACKET'''
@@ -165,10 +182,13 @@ def p_statemtent_return_index(t):
 
 
 def p_statement_expr(t):
-    '''statement : expression
+    '''statement :
+                 | rule_statement
+                 | expression
                  | boolean_and_or
                  | string'''
-    print(t[1])
+    if len(t) == 2:
+        print(t[1])
 
 def p_boolean_and_or_operations(t):
     '''boolean_and_or : boolean_statement
@@ -206,7 +226,10 @@ def p_boolean_statement(t):
 
 def p_string_statement(t):
     '''string : STRING'''
-    t[0] = t[1]
+    if len(t) == 1:
+        t[0] = None
+    else:
+        t[0] = t[1]
 
 def p_expression_binary_operations(t):
     '''expression : expression PLUS expression
@@ -220,7 +243,10 @@ def p_expression_binary_operations(t):
     elif t[2] == '*':
         t[0] = t[1] * t[3]
     elif t[2] == '/':
-        t[0] = t[1] / t[3]
+        try:
+            t[0] = t[1] / t[3]
+        except ZeroDivisionError:
+            print("Cannot divide by zero")
 
 def p_expression_uminus(t):
     'expression : MINUS expression %prec UMINUS'
@@ -240,21 +266,22 @@ def p_tuple_expression(t):
     t[0] = t[2]
 
 def p_tuple_content(t):
-    '''tuple_content :
-                     | tuple_content COMA tuple_item
+    '''tuple_content : tuple_content COMA tuple_item
                      | tuple_item'''
-    if len(t) == 1:
-        t[0] = ()
-    elif len(t) == 2:
+    if len(t) == 2:
         t[0] = (t[1],)
     else:
         t[0] = t[1] + (t[3],)
 
 def p_tuple_item(t):
-    '''tuple_item : expression
+    '''tuple_item :
+                  | expression
                   | boolean_and_or
                   | string'''
-    t[0] = t[1]
+    if len(t) == 1:
+        t[0] = ()
+    elif len(t) == 2:
+        t[0] = t[1]
 
 def p_expression_list(t):
     '''expression : list_expression'''
@@ -269,21 +296,22 @@ def p_list_expression(t):
     t[0] = t[2]
 
 def p_list_content(t):
-    '''list_content :
-                    | list_content COMA list_item
+    '''list_content : list_content COMA list_item
                     | list_item '''
-    if len(t) == 1:
-        t[0] = []
-    elif len(t) == 2:
+    if len(t) == 2:
         t[0] = [t[1]]
     else:
         t[0] = t[1] + [t[3]]
 
 def p_list_item(t):
-    '''list_item : expression
+    '''list_item :
+                 | expression
                  | boolean_and_or
                  | string'''
-    t[0] = t[1]
+    if len(t) == 1:
+        t[0] = []
+    elif len(t) == 2:
+        t[0] = t[1]
 
 def p_expression_number(t):
     'expression : NUMBER'
@@ -303,6 +331,7 @@ def p_expression_identifier(t):
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)
+
 
 # Build the parser
 parser = yacc.yacc()
