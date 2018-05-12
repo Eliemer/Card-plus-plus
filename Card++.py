@@ -6,7 +6,6 @@ import ply.yacc as yacc
 # List of tokens
 tokens = [
     'NUMBER',
-    'STRING',
     'PLUS',
     'MINUS',
     'TIMES',
@@ -15,8 +14,6 @@ tokens = [
     'RPAREN',
     'LBRACKET',
     'RBRACKET',
-    'LSBRACKET',
-    'RSBRACKET',
     'LTHAN',
     'GTHAN',
     'LTHANOREQUALS',
@@ -67,8 +64,6 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACKET = r'\{'
 t_RBRACKET = r'\}'
-t_LSBRACKET = r'\['
-t_RSBRACKET = r'\]'
 t_LTHAN = r'<'
 t_GTHAN = r'>'
 t_LTHANOREQUALS = r'\<\='
@@ -88,13 +83,6 @@ def t_NUMBER(t):
         t.value = 0
     return t
 
-def t_STRING(t):
-    '\"([^"])*\"'
-    try:
-        t.value = str(t.value)
-    except ValueError:
-        print("Line %d: String %s is poorly formatted" % (t.lineno, t.value))
-    return t
 
 def t_IDENTIFIER(t):
     r'[a-zA-Z0-9]+'
@@ -119,11 +107,14 @@ lexer = lex.lex()
 
 # TEST DATA
 data = '''
-"This is a string"
+Deck { a, b, c, d, e}
+
+this == 3
+that >= 2
 '''
 
 # lex.input(data)
-#
+
 # while 1:
 #     tok = lex.token()
 #     if not tok: break
@@ -146,35 +137,10 @@ precedence = (
 )
 
 identifiers = {}
-rules = {}
 
 def p_statement_assign(t):
-    '''statement : IDENTIFIER EQUALS expression
-                 | IDENTIFIER EQUALS boolean_and_or
-                 | IDENTIFIER EQUALS string'''
+    'statement : IDENTIFIER EQUALS expression'
     identifiers[t[1]] = t[3]
-    print(t[3])
-
-def p_rule_statement_assign(t):
-    '''rule_statement : RULE IDENTIFIER string
-                      | RULE IDENTIFIER
-                      | RULE'''
-    if len(t) == 2:
-        print("Empty Rule Declaration")
-    elif len(t) == 3:
-        t[0] = rules[t[2]]
-    elif len(t) == 4:
-        try:
-            rules[t[2]] = t[3]
-            identifiers[t[2]] = rules[t[2]]
-            t[0] = rules[t[2]]
-        except AttributeError:
-            print("Empty Rule Declaration")
-
-def p_statemtent_return_index(t):
-    '''statement : IDENTIFIER LSBRACKET NUMBER RSBRACKET'''
-    t[0] = identifiers[t[1]][t[3]]
-    print(t[0])
 
 # def p_code_block_assign(t):
 #     'block : IDENTIFIER LBRACKET expression RBRACKET'
@@ -182,21 +148,15 @@ def p_statemtent_return_index(t):
 
 
 def p_statement_expr(t):
-    '''statement :
-                 | rule_statement
-                 | expression
-                 | boolean_and_or
-                 | string'''
-    if len(t) == 2:
-        print(t[1])
+    '''statement : expression
+                 | boolean_and_or'''
+    print(t[1])
 
 def p_boolean_and_or_operations(t):
     '''boolean_and_or : boolean_statement
                       | boolean_statement AND boolean_statement
                       | boolean_statement OR boolean_statement'''
-    if len(t) == 2:
-        t[0] = t[1]
-    elif t[2] == 'And':
+    if t[2] == 'And':
         t[0] = t[1] and t[3]
     elif t[2] == 'Or':
         t[0] = t[1] or t[3]
@@ -224,12 +184,6 @@ def p_boolean_statement(t):
     elif t[2] == '<=':
         t[0] = t[1] <= t[3]
 
-def p_string_statement(t):
-    '''string : STRING'''
-    if len(t) == 1:
-        t[0] = None
-    else:
-        t[0] = t[1]
 
 def p_expression_binary_operations(t):
     '''expression : expression PLUS expression
@@ -243,10 +197,7 @@ def p_expression_binary_operations(t):
     elif t[2] == '*':
         t[0] = t[1] * t[3]
     elif t[2] == '/':
-        try:
-            t[0] = t[1] / t[3]
-        except ZeroDivisionError:
-            print("Cannot divide by zero")
+        t[0] = t[1] / t[3]
 
 def p_expression_uminus(t):
     'expression : MINUS expression %prec UMINUS'
@@ -256,62 +207,9 @@ def p_expression_uplus(t):
     'expression : PLUS expression %prec UPLUS'
     t[0] = t[2]
 
-def p_expression_tuple(t):
-    'expression : tuple_expression'
-    t[0] = t[1]
-
-def p_tuple_expression(t):
-    '''tuple_expression : LPAREN tuple_content RPAREN
-                        | LPAREN tuple_expression RPAREN COMA tuple_expression'''
+def p_statement_group(t):
+    'statement : LPAREN statement RPAREN'
     t[0] = t[2]
-
-def p_tuple_content(t):
-    '''tuple_content : tuple_content COMA tuple_item
-                     | tuple_item'''
-    if len(t) == 2:
-        t[0] = (t[1],)
-    else:
-        t[0] = t[1] + (t[3],)
-
-def p_tuple_item(t):
-    '''tuple_item :
-                  | expression
-                  | boolean_and_or
-                  | string'''
-    if len(t) == 1:
-        t[0] = ()
-    elif len(t) == 2:
-        t[0] = t[1]
-
-def p_expression_list(t):
-    '''expression : list_expression'''
-    if len(t) == 2:
-        t[0] = t[1]
-    else:
-        t[0] = [t[1], t[3]]
-
-def p_list_expression(t):
-    '''list_expression : LBRACKET list_content RBRACKET
-                       | LBRACKET list_expression RBRACKET COMA list_expression'''
-    t[0] = t[2]
-
-def p_list_content(t):
-    '''list_content : list_content COMA list_item
-                    | list_item '''
-    if len(t) == 2:
-        t[0] = [t[1]]
-    else:
-        t[0] = t[1] + [t[3]]
-
-def p_list_item(t):
-    '''list_item :
-                 | expression
-                 | boolean_and_or
-                 | string'''
-    if len(t) == 1:
-        t[0] = []
-    elif len(t) == 2:
-        t[0] = t[1]
 
 def p_expression_number(t):
     'expression : NUMBER'
@@ -331,7 +229,6 @@ def p_expression_identifier(t):
 
 def p_error(t):
     print("Syntax error at '%s'" % t.value)
-
 
 # Build the parser
 parser = yacc.yacc()
