@@ -7,6 +7,18 @@ class Card(object):
         self.value = value
         self.suit = suit
 
+    def getValue(self):
+        return self.value
+
+    def getSuit(self):
+        return self.suit
+
+    def setValue(self, value):
+        self.value = value
+
+    def setSuit(self, suit):
+        self.suit = suit
+
     def printCard(self):
         return self.valueList[self.value] + "of" + self.suitList[self.suit] + "\n"
 
