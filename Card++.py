@@ -142,11 +142,12 @@ precedence = (
     ('left', 'TIMES', 'DIVIDE'),
     ('left', 'OR', 'AND'),
     ('right', 'UMINUS'),
-    ('right', 'UPLUS')
+    ('right', 'UPLUS'),
 )
 
 identifiers = {}
 rules = {}
+actions = {}
 
 def p_statement_assign(t):
     '''statement : IDENTIFIER EQUALS expression
@@ -155,8 +156,63 @@ def p_statement_assign(t):
     identifiers[t[1]] = t[3]
     print(t[3])
 
-# def p_action_statement_assign(t):
-#     '''action_statement : ACTION function'''
+def p_action_statement_assign(t):
+    '''action_statement : ACTION IDENTIFIER LPAREN action_parameter RPAREN LBRACKET action_content SEMICOLON RBRACKET'''
+    actions[t[2]] = t[4]
+    identifiers[t[2]] = t[4]
+    t[0] = t[4]
+
+def p_action_content(t):
+    '''action_content : function
+                      | action_content SEMICOLON function'''
+    if len(t) == 2:
+        t[0] = t[1]
+
+
+def p_function(t):
+    '''function : IDENTIFIER LPAREN action_parameters RPAREN'''
+    if t[1] == "Flip" or t[1] == "flip":
+        if isinstance(t[3][0], tuple):
+            t[0] = flip(t[3][0])
+        else:
+            print("Can only flip card tuples")
+    elif t[1] == "Move" or t[1] == "move":
+        if isinstance(t[3], list):
+            if isinstance(t[3][0], list) and isinstance(t[3][1], list):
+                try:
+                    if isinstance(t[3][2], tuple):
+                        t[0] = move([t[3][0], t[3][1], t[3][2]])
+                except IndexError:
+                    t[0] = move([t[3][0], t[3][1]])
+
+            else:
+                print("Origin or destination is not defined as a field")
+        else:
+            print("move() undefined for such parameter")
+    elif t[1] == "Compare" or t[1] == "compare":
+        if len(t[3]) == 2:
+            if isinstance(t[3][0], tuple) and isinstance(t[3][1], tuple):
+                compare(t[3][0], t[3][1])
+            else:
+                print("Parameters must be tuples")
+        else:
+            print("Incorrect number of parameters for Compare()")
+
+
+
+
+def p_action_parameters(t):
+    '''action_parameters : action_parameter
+                         | action_parameters COMA action_parameter'''
+    if len(t) == 2:
+        t[0] = [t[1]]
+    else:
+        t[0] = t[1] + [t[3]]
+
+
+def p_action_parameter(t):
+    '''action_parameter : expression'''
+    t[0] = t[1]
 
 def p_statement_verify(t):
     '''statement : verify'''
@@ -224,6 +280,8 @@ def p_statemtent_return_index(t):
 
 def p_statement_expr(t):
     '''statement :
+                 | action_statement
+                 | function
                  | rules_block
                  | rule_statement
                  | expression
@@ -372,11 +430,31 @@ def p_expression_identifier(t):
 
 
 def p_error(t):
-    print("Syntax error at '%s'" % t.value)
-
+    try:
+        print("Syntax error at '%s'" % t.value)
+    except AttributeError:
+        print("something return NoneType")
 
 # Build the parser
-parser = yacc.yacc()
+parser = yacc.yacc(debug=True)
+
+def move(a):
+    if len(a) == 2:
+        print("random moving")
+        return True
+    elif len(a) == 3:
+        print("selective moving")
+        return True
+    else:
+        return False
+
+def flip(n):
+    print("flipping")
+    return 4 + 4
+
+def compare(x, y):
+    print("comparing")
+    return 7+7
 
 while True:
     try:
@@ -385,8 +463,3 @@ while True:
         break
     parser.parse(s)
 
-def Draw(n):
-    if type(n) == int:
-        print(n)
-    else:
-        print("not an integer value")
