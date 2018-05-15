@@ -6,6 +6,10 @@ class Card(object):
     def __init__(self, value, suit):
         self.value = value
         self.suit = suit
+        self.facedown = 0
+
+    def flip(self):
+        self.facedown = 1
 
     def getValue(self):
         return self.value
@@ -20,16 +24,19 @@ class Card(object):
         self.suit = suit
 
     def printCard(self):
-        return self.valueList[self.value] + "of" + self.suitList[self.suit] + "\n"
+        if self.facedown == 0:
+            return "(" + self.valueList[self.value] + ", " + self.suitList[self.suit] + ")"
+        elif self.facedown == 0:
+            return "********"
 
-    def compCardValues(self, other):
+    def compare(self, other):
         if self.value > other.value:
             return 1
         if self.value < other.value:
             return -1
         return 0
 
-    def compCardSuits(self, other):
+    def compareSuits(self, other):
         if self.suit == other.suit:
             return 1
         return -1
