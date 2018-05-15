@@ -26,7 +26,8 @@ tokens = [
     'COMA',
     'COLON',
     'SEMICOLON',
-    'IDENTIFIER'
+    'IDENTIFIER',
+    'NEWLINE'
 ]
 
 reserved = {
@@ -78,6 +79,7 @@ t_EQUALS = r'\='
 t_COMA = r','
 t_COLON = r'\:'
 t_SEMICOLON = r';'
+# t_NEWLINE = r'[^\r\n]'
 
 def t_NUMBER(t):
     r'\d+'
@@ -104,7 +106,7 @@ def t_IDENTIFIER(t):
         t.type = reserved[ t.value ]
     return t
 
-def t_newline(t):
+def t_NEWLINE(t):
     r'\n+'
     t.lineno += len(t.value)
 
@@ -118,8 +120,9 @@ def t_error(t):
 lexer = lex.lex()
 
 # TEST DATA
-data = '''
-"This is a string"
+data = '''"This is a string"
+
+
 '''
 
 # lex.input(data)
@@ -149,6 +152,13 @@ identifiers = {}
 rules = {}
 actions = {}
 
+def p_program(t):
+    '''program : statements'''
+
+def p_statements(t):
+    '''statements : statement SEMICOLON
+                  | statements statement SEMICOLON'''
+
 def p_statement_assign(t):
     '''statement : IDENTIFIER EQUALS expression
                  | IDENTIFIER EQUALS boolean_and_or
@@ -157,7 +167,7 @@ def p_statement_assign(t):
     print(t[3])
 
 def p_action_statement_assign(t):
-    '''action_statement : ACTION IDENTIFIER LPAREN action_parameter RPAREN LBRACKET action_content SEMICOLON RBRACKET'''
+    '''action_statement : ACTION IDENTIFIER LPAREN action_parameters RPAREN LBRACKET action_content SEMICOLON RBRACKET'''
     actions[t[2]] = t[4]
     identifiers[t[2]] = t[4]
     t[0] = t[4]
@@ -430,13 +440,25 @@ def p_expression_identifier(t):
 
 
 def p_error(t):
-    try:
-        print("Syntax error at '%s'" % t.value)
-    except AttributeError:
-        print("something return NoneType")
+    print("Syntax error at '%s'" % t.value)
 
 # Build the parser
-parser = yacc.yacc(debug=True)
+parser = yacc.yacc()
+
+def parsing(file):
+    def get_token():
+        '''a tokenizer that automatically feeds the lexer with the next line'''
+        while True:
+            tok = lex.token()
+            if tok is not None: return tok
+            try:
+                line = next(file)
+                lex.input(line)
+            except StopIteration:
+                return None
+    parser.parse("", lexer=lex, tokenfunc=get_token)
+
+parsing(open("Card++_test", "r"))
 
 def move(a):
     if len(a) == 2:
@@ -456,10 +478,12 @@ def compare(x, y):
     print("comparing")
     return 7+7
 
-while True:
-    try:
-        s = input('card >')
-    except EOFError:
-        break
-    parser.parse(s)
+# while True:
+#     string = ''
+#     line = input("Card> ")
+#     while line != '':
+#         string += line
+#         line = input()
+#     parser.parse(string)
+
 
