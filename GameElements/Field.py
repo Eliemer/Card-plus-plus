@@ -44,7 +44,7 @@ class Field(object):
     def isEmpty(self):
         return len(self.cards) == 0
 
-    def moveTo(self, card, destination):
+    def move(self, card, destination):
         temp = self.cards[card]
         destination.append(temp)
         self.removeCard(card)
