@@ -29,11 +29,11 @@ class Card(object):
     def setSuit(self, suit):
         self.suit = suit
 
-    def printCard(self):
-        if self.facedown == 0:
-            return "(" + self.valueList[self.value] + ", " + self.suitList[self.suit] + ")"
-        elif self.facedown == 0:
-            return "********"
+    def getCard(self):
+        if not self.facedown:
+            return self.valueList[self.value] + "of" + self.suitList[self.suit]
+        elif self.facedown:
+            return "***"
 
     def compare(self, other):
         if self.value > other.value:
