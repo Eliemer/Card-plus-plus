@@ -6,16 +6,22 @@ class Card(object):
     def __init__(self, value, suit):
         self.value = value
         self.suit = suit
-        self.facedown = 0
+        self.facedown = False
 
     def flip(self):
-        self.facedown = 1
+        self.facedown = not self.facedown
 
     def getValue(self):
-        return self.value
+        if(not self.facedown):
+            return self.value
+        else:
+            return "***"
 
     def getSuit(self):
-        return self.suit
+        if (not self.facedown):
+            return self.suit
+        else:
+            return "***"
 
     def setValue(self, value):
         self.value = value

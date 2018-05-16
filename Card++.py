@@ -1,5 +1,8 @@
 import ply.lex as lex
 import ply.yacc as yacc
+import GameElements.Card as card
+import GameElements.Field as field
+import GameElements.Player as player
 
 # All lex rules
 
@@ -151,6 +154,7 @@ precedence = (
 identifiers = {}
 rules = {}
 actions = {}
+cards = {}
 
 def p_program(t):
     '''program : statements'''
@@ -159,10 +163,11 @@ def p_statements(t):
     '''statements : statement SEMICOLON
                   | statements statement SEMICOLON'''
 
+
 def p_statement_assign(t):
-    '''statement : IDENTIFIER EQUALS expression
-                 | IDENTIFIER EQUALS boolean_and_or
-                 | IDENTIFIER EQUALS string'''
+    '''statement_assign : IDENTIFIER EQUALS expression
+                        | IDENTIFIER EQUALS boolean_and_or
+                        | IDENTIFIER EQUALS string'''
     identifiers[t[1]] = t[3]
     print(t[3])
 
@@ -178,12 +183,26 @@ def p_action_content(t):
     if len(t) == 2:
         t[0] = t[1]
 
+def p_card_type_declaration(t):
+    '''card_declaration : CARD IDENTIFIER EQUALS tuple_expression'''
+    if len(t[4]) == 2:
+        t[0] = card.Card(t[4][0], t[4][1])
+        identifiers[t[2]] = t[0]
+        cards[t[2]] = t[0]
 
 def p_function(t):
     '''function : IDENTIFIER LPAREN action_parameters RPAREN'''
     if t[1] == "Flip" or t[1] == "flip":
         if isinstance(t[3][0], tuple):
-            t[0] = flip(t[3][0])
+            # t[0] = flip(t[3][0])
+            try:
+                c = card.Card(t[3][0][0], t[3][0][1])
+                print("Flipping")
+                c.flip()
+                print(c.getValue() + " of " + c.getSuit())
+                t[0] = ""
+            except IndexError:
+                print("bad")
         else:
             print("Can only flip card tuples")
     elif t[1] == "Move" or t[1] == "move":
@@ -192,6 +211,7 @@ def p_function(t):
                 try:
                     if isinstance(t[3][2], tuple):
                         t[0] = move([t[3][0], t[3][1], t[3][2]])
+
                 except IndexError:
                     t[0] = move([t[3][0], t[3][1]])
 
@@ -290,6 +310,8 @@ def p_statemtent_return_index(t):
 
 def p_statement_expr(t):
     '''statement :
+                 | statement_assign
+                 | card_declaration
                  | action_statement
                  | function
                  | rules_block
@@ -458,8 +480,6 @@ def parsing(file):
                 return None
     parser.parse("", lexer=lex, tokenfunc=get_token)
 
-parsing(open("Card++_test", "r"))
-
 def move(a):
     if len(a) == 2:
         print("random moving")
@@ -485,5 +505,8 @@ def compare(x, y):
 #         string += line
 #         line = input()
 #     parser.parse(string)
+
+parsing(open("test", "r"))
+
 
 
