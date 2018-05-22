@@ -163,13 +163,20 @@ def p_statements(t):
     '''statements : statement SEMICOLON
                   | statements statement SEMICOLON'''
 
-
 def p_statement_assign(t):
     '''statement_assign : IDENTIFIER EQUALS expression
                         | IDENTIFIER EQUALS boolean_and_or
                         | IDENTIFIER EQUALS string'''
     identifiers[t[1]] = t[3]
     print(t[3])
+
+def p_deck_assing_statement(t):
+    '''statement_assign : DECK list_expression'''
+    identifiers["Deck"] = t[2]
+    print("\nDeck initialized to: \n")
+    for x in t[2]:
+        print(x.getCardAnyway())
+
 
 def p_action_statement_assign(t):
     '''action_statement : ACTION IDENTIFIER LPAREN action_parameters RPAREN LBRACKET action_content SEMICOLON RBRACKET'''
@@ -189,20 +196,38 @@ def p_card_type_declaration(t):
         t[0] = card.Card(t[4][0], t[4][1])
         identifiers[t[2]] = t[0]
         cards[t[2]] = t[0]
+        t[0] = None
+
+def p_function_expression(t):
+    '''expression : function'''
+    t[0] = t[1]
+
 
 def p_function(t):
     '''function : IDENTIFIER LPAREN action_parameters RPAREN'''
     if t[1] == "Flip" or t[1] == "flip":
         if isinstance(t[3][0], tuple):
             # t[0] = flip(t[3][0])
+            if isinstance(t[3][0][0], str) and isinstance(t[3][0][1], str):
+                try:
+                    c = card.Card(t[3][0][0], t[3][0][1])
+                    print(c.getCard())
+                    print("Flipping")
+
+                    print(c.getCard())
+                    t[0] = ""
+                except IndexError:
+                    print("bad")
+        elif isinstance(t[3][0], card.Card):
             try:
-                c = card.Card(t[3][0][0], t[3][0][1])
-                print("Flipping")
-                c.flip()
-                print(c.getValue() + " of " + c.getSuit())
-                t[0] = ""
-            except IndexError:
-                print("bad")
+
+                print("\nFlipping: " + t[3][0].getCardAnyway())
+                #print(t[3][0].flip())
+                t[3][0].flip()
+                print("Current visibility: " + t[3][0].getCard() + "\n")
+            except TypeError:
+                print("Could not flip card")
+
         else:
             print("Can only flip card tuples")
     elif t[1] == "Move" or t[1] == "move":
@@ -223,10 +248,18 @@ def p_function(t):
         if len(t[3]) == 2:
             if isinstance(t[3][0], tuple) and isinstance(t[3][1], tuple):
                 compare(t[3][0], t[3][1])
+            elif isinstance(t[3][0], card.Card) and isinstance(t[3][0], card.Card):
+                print("\nComparing: " + t[3][0].getCard() + " and " + t[3][1].getCard())
+                print("\t0: Equals\n\t1: Left is larger\n   -1: Right is larger")
+                t[0] = t[3][0].compareValue(t[3][1])
+                print(t[0])
             else:
                 print("Parameters must be tuples")
+
+
         else:
             print("Incorrect number of parameters for Compare()")
+
 
 
 
@@ -253,6 +286,7 @@ def p_verify_statement(t):
     if len(t) == 3:
         if t[1] == "verify" or t[1] == "Verify":
             try:
+                t[0] = rules[t[2]]
                 t[0] = eval(eval(rules[t[2]]))
             except KeyError:
                 try:
@@ -303,23 +337,17 @@ def p_statemtent_return_index(t):
     t[0] = identifiers[t[1]][t[3]]
     print(t[0])
 
-# def p_code_block_assign(t):
-#     'block : IDENTIFIER LBRACKET expression RBRACKET'
-#     identifiers[t[1]] = t[3]
-
-
 def p_statement_expr(t):
     '''statement :
                  | statement_assign
                  | card_declaration
                  | action_statement
-                 | function
                  | rules_block
                  | rule_statement
                  | expression
                  | boolean_and_or
                  | string'''
-    if len(t) == 2:
+    if len(t) == 2 and t[1] is not None:
         print(t[1])
 
 def p_boolean_and_or_operations(t):

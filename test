@@ -1,0 +1,128 @@
+Card ClubsAce = ("Ace", "Clubs");
+Card Clubs2 = ("2", "Clubs");
+Card Clubs3 = ("3", "Clubs");
+Card Clubs4 = ("4", "Clubs");
+Card Clubs5 = ("5", "Clubs");
+Card Clubs6 = ("6", "Clubs");
+Card Clubs7 = ("7", "Clubs");
+Card Clubs8 = ("8", "Clubs");
+Card Clubs9 = ("9", "Clubs");
+Card Clubs10 = ("10", "Clubs");
+Card ClubsJack = ("Jack", "Clubs");
+Card ClubsQueen = ("Queen", "Clubs");
+Card ClubsKing = ("King", "Clubs");
+
+Card SpadesAce = ("Ace", "Spades");
+Card Spades2 = ("2", "Spades");
+Card Spades3 = ("3", "Spades");
+Card Spades4 = ("4", "Spades");
+Card Spades5 = ("5", "Spades");
+Card Spades6 = ("6", "Spades");
+Card Spades7 = ("7", "Spades");
+Card Spades8 = ("8", "Spades");
+Card Spades9 = ("9", "Spades");
+Card Spades10 = ("10", "Spades");
+Card SpadesJack = ("Jack", "Spades");
+Card SpadesQueen = ("Queen", "Spades");
+Card SpadesKing = ("King", "Spades");
+
+Card DiamondsAce = ("Ace", "Diamonds");
+Card Diamonds2 = ("2", "Diamonds");
+Card Diamonds3 = ("3", "Diamonds");
+Card Diamonds4 = ("4", "Diamonds");
+Card Diamonds5 = ("5", "Diamonds");
+Card Diamonds6 = ("6", "Diamonds");
+Card Diamonds7 = ("7", "Diamonds");
+Card Diamonds8 = ("8", "Diamonds");
+Card Diamonds9 = ("9", "Diamonds");
+Card Diamonds10 = ("10", "Diamonds");
+Card DiamondsJack = ("Jack", "Diamonds");
+Card DiamondsQueen = ("Queen", "Diamonds");
+Card DiamondsKing = ("King", "Diamonds");
+
+Card HeartsAce = ("Ace", "Hearts");
+Card Hearts2 = ("2", "Hearts");
+Card Hearts3 = ("3", "Hearts");
+Card Hearts4 = ("4", "Hearts");
+Card Hearts5 = ("5", "Hearts");
+Card Hearts6 = ("6", "Hearts");
+Card Hearts7 = ("7", "Hearts");
+Card Hearts8 = ("8", "Hearts");
+Card Hearts9 = ("9", "Hearts");
+Card Hearts10 = ("10", "Hearts");
+Card HeartsJack = ("Jack", "Hearts");
+Card HeartsQueen = ("Queen", "Hearts");
+Card HeartsKing = ("King", "Hearts");
+
+Deck
+[
+    ClubsAce,
+    Clubs2,
+    Clubs3,
+    Clubs4,
+    Clubs5,
+    Clubs6,
+    Clubs7,
+    Clubs8,
+    Clubs9,
+    Clubs10,
+    ClubsJack,
+    ClubsQueen,
+    ClubsKing,
+
+    SpadesAce,
+    Spades2,
+    Spades3,
+    Spades4,
+    Spades5,
+    Spades6,
+    Spades7,
+    Spades8,
+    Spades9,
+    Spades10,
+    SpadesJack,
+    SpadesQueen,
+    SpadesKing,
+
+    DiamondsAce,
+    Diamonds2,
+    Diamonds3,
+    Diamonds4,
+    Diamonds5,
+    Diamonds6,
+    Diamonds7,
+    Diamonds8,
+    Diamonds9,
+    Diamonds10,
+    DiamondsJack,
+    DiamondsQueen,
+    DiamondsKing,
+
+    HeartsAce,
+    Hearts2,
+    Hearts3,
+    Hearts4,
+    Hearts5,
+    Hearts6,
+    Hearts7,
+    Hearts8,
+    Hearts9,
+    Hearts10,
+    HeartsJack,
+    HeartsQueen,
+    HeartsKing
+];
+
+flip(ClubsAce);
+flip(ClubsAce);
+
+Compare(Spades4, Clubs4) == 1;
+
+id = [12, 34];
+id[0];
+
+
+
+
+
+

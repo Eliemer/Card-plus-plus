@@ -1,15 +1,32 @@
 class Card(object):
 
-    suitList = ["Clubs", "Diamonds", "Hearts", "Spades"]
-    valueList = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
-
     def __init__(self, value, suit):
-        self.value = value
-        self.suit = suit
-        self.facedown = False
+        suitList = ["Clubs", "Diamonds", "Hearts", "Spades"]
+        valueList = {
+            "Ace": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "10": 10,
+            "Jack": 11,
+            "Queen": 12,
+            "King": 13
+        }
+
+
+        if eval(suit) in suitList and eval(value) in valueList:
+            self.suit = eval(suit)
+            self.value = valueList[eval(value)]
+            self.facedown = False
 
     def flip(self):
         self.facedown = not self.facedown
+        return self.facedown
 
     def getValue(self):
         if(not self.facedown):
@@ -31,22 +48,25 @@ class Card(object):
 
     def getCard(self):
         if not self.facedown:
-            return self.valueList[self.value] + "of" + self.suitList[self.suit]
-        elif self.facedown:
+            return str(self.getValue()) + " of " + self.getSuit()
+        else:
             return "***"
 
-    def compare(self, other):
+    def compareValue(self, other):
         if self.value > other.value:
             return 1
-        if self.value < other.value:
+        elif self.value < other.value:
             return -1
-        return 0
+        else:
+            return 0
 
     def compareSuits(self, other):
         if self.suit == other.suit:
             return 1
         return -1
 
+    def getCardAnyway(self):
+        return str(self.value) + " of " + self.suit
 
 
 
