@@ -54,7 +54,7 @@ Card HeartsJack = ("Jack", "Hearts");
 Card HeartsQueen = ("Queen", "Hearts");
 Card HeartsKing = ("King", "Hearts");
 
-Deck
+Field Deck
 [
     ClubsAce,
     Clubs2,
@@ -113,13 +113,34 @@ Deck
     HeartsKing
 ];
 
-flip(ClubsAce);
-flip(ClubsAce);
+Shuffle(Deck);
 
-Compare(Spades4, Clubs4) == 1;
+Field Hand [];
 
-id = [12, 34];
-id[0];
+Field Table [];
+
+Draw(Table);
+Draw(Table);
+Draw(Hand);
+Draw(Hand);
+Draw(Hand, 3);
+
+Shuffle(Hand);
+
+flip(Diamonds3);
+
+Move(3, Table, Hand);
+
+Hand[1];
+Table[3];
+
+id = Hand[1];
+flip(Hand[1]);
+
+
+
+
+
 
 
 

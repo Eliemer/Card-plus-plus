@@ -34,7 +34,6 @@ tokens = [
 ]
 
 reserved = {
-    'Deck' : 'DECK',
     'Field' : 'FIELD',
     'Player' : 'PLAYER',
     'Card' : 'CARD',
@@ -170,12 +169,15 @@ def p_statement_assign(t):
     identifiers[t[1]] = t[3]
     print(t[3])
 
-def p_deck_assing_statement(t):
-    '''statement_assign : DECK list_expression'''
-    identifiers["Deck"] = t[2]
-    print("\nDeck initialized to: \n")
-    for x in t[2]:
-        print(x.getCardAnyway())
+def p_field_assign_statement(t):
+    '''statement_assign : FIELD IDENTIFIER list_expression'''
+    identifiers[t[2]] = field.Field(t[2], t[3])
+    print("\nField " + str(t[2]) + " initialized to: \n")
+    if identifiers[t[2]].printField() == "":
+        print("EMPTY\n")
+    else:
+        print(identifiers[t[2]].printField())
+
 
 
 def p_action_statement_assign(t):
@@ -205,20 +207,27 @@ def p_function_expression(t):
 
 def p_function(t):
     '''function : IDENTIFIER LPAREN action_parameters RPAREN'''
-    if t[1] == "Flip" or t[1] == "flip":
-        if isinstance(t[3][0], tuple):
-            # t[0] = flip(t[3][0])
-            if isinstance(t[3][0][0], str) and isinstance(t[3][0][1], str):
-                try:
-                    c = card.Card(t[3][0][0], t[3][0][1])
-                    print(c.getCard())
-                    print("Flipping")
 
-                    print(c.getCard())
-                    t[0] = ""
-                except IndexError:
-                    print("bad")
-        elif isinstance(t[3][0], card.Card):
+    if t[1] == "Shuffle" or t[1] == "shuffle":
+        if isinstance(t[3][0], field.Field):
+            identifiers[t[3][0].getname()].shuffleField(1)
+            print("\n" + t[3][0].getname() + " shuffled to: \n\n" + t[3][0].printField())
+        else:
+            print("This is not a Field\n")
+
+    elif t[1] == "Draw" or t[1] == "draw":
+        if isinstance(t[3][0], field.Field):
+            if len(t[3]) == 1:
+                identifiers[t[3][0].getname()].draw(1, identifiers["Deck"])
+                print("\n" + t[3][0].getname() + " updated to: \n\n" + t[3][0].printField())
+            elif len(t[3]) == 2:
+                if isinstance(t[3][1], int):
+                    identifiers[t[3][0].getname()].draw(t[3][1], identifiers["Deck"])
+                    print("\n" + t[3][0].getname() + " updated to: \n\n" + t[3][0].printField())
+            else:
+                print("incorrect number of parameters\n")
+    elif t[1] == "Flip" or t[1] == "flip":
+        if isinstance(t[3][0], card.Card):
             try:
 
                 print("\nFlipping: " + t[3][0].getCardAnyway())
@@ -229,16 +238,27 @@ def p_function(t):
                 print("Could not flip card")
 
         else:
-            print("Can only flip card tuples")
+            print("Can only flip cards")
     elif t[1] == "Move" or t[1] == "move":
         if isinstance(t[3], list):
-            if isinstance(t[3][0], list) and isinstance(t[3][1], list):
+            if isinstance(t[3][2], field.Field) and isinstance(t[3][1], field.Field):
                 try:
-                    if isinstance(t[3][2], tuple):
-                        t[0] = move([t[3][0], t[3][1], t[3][2]])
+                    if isinstance(t[3][0], card.Card):
+                        t[0] = t[3][1].move(t[3][0], t[3][2])
+                        print("\n" + t[3][2].getname() + " updated to: " + "\n")
+                        print(t[3][2].printField())
 
+                        print("\n" + t[3][1].getname() + " updated to: " + "\n")
+                        print(t[3][1].printField())
+                    elif isinstance(t[3][0], int):
+                        t[0] = t[3][1].draw(t[3][0], t[3][2])
+                        print("\n" + t[3][2].getname() + " updated to: " + "\n")
+                        print(t[3][2].printField())
+
+                        print("\n" + t[3][1].getname() + " updated to: " + "\n")
+                        print(t[3][1].printField())
                 except IndexError:
-                    t[0] = move([t[3][0], t[3][1]])
+                    print("Incorrect number of parameters")
 
             else:
                 print("Origin or destination is not defined as a field")
@@ -248,7 +268,7 @@ def p_function(t):
         if len(t[3]) == 2:
             if isinstance(t[3][0], tuple) and isinstance(t[3][1], tuple):
                 compare(t[3][0], t[3][1])
-            elif isinstance(t[3][0], card.Card) and isinstance(t[3][0], card.Card):
+            elif isinstance(t[3][0], card.Card) and isinstance(t[3][1], card.Card):
                 print("\nComparing: " + t[3][0].getCard() + " and " + t[3][1].getCard())
                 print("\t0: Equals\n\t1: Left is larger\n   -1: Right is larger")
                 t[0] = t[3][0].compareValue(t[3][1])
@@ -259,6 +279,8 @@ def p_function(t):
 
         else:
             print("Incorrect number of parameters for Compare()")
+    else:
+        print("Undefined function : %s", t[1])
 
 
 
@@ -333,9 +355,9 @@ def p_rules_statements(t):
         t[0] = t[1] + [t[3]]
 
 def p_statemtent_return_index(t):
-    '''statement : IDENTIFIER LSBRACKET NUMBER RSBRACKET'''
+    '''expression : IDENTIFIER LSBRACKET NUMBER RSBRACKET'''
     t[0] = identifiers[t[1]][t[3]]
-    print(t[0])
+    print("\nIndex " + str(t[3]) + " of " + t[1] + " : \n")
 
 def p_statement_expr(t):
     '''statement :

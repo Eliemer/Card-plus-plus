@@ -1,4 +1,5 @@
 import random
+import GameElements.Card as Card
 
 
 class Field(object):
@@ -7,9 +8,25 @@ class Field(object):
         self.name = name
         self.cards = []
 
+    def __init__(self,name, list):
+        self.name = name
+        self.cards = list
+
+    def __getitem__(self, item):
+        return self.cards[item]
+
     def printField(self):
+        temp = ""
         for card in self.cards:
-            card.printCard()
+            if isinstance(card, Card.Card):
+                temp += (card.getCard() + "\n")
+        return temp
+
+    def getname(self):
+        return self.name
+
+    def getcards(self):
+        return self.cards
 
     def sortByValue(self):
         self.sort(key=int)
@@ -22,10 +39,11 @@ class Field(object):
                 [self.cards[i], self.cards[j]] = [self.cards[j], self.cards[i]]
 
     def removeCard(self, card):
+        temp = []
         if card in self.cards:
-            return self.cards.remove(card)
+            temp = self.cards.remove(card)
         else:
-            return
+            return None
 
     def removeCardIndex(self, index):
         if index >= 0 and index <= len(self):
@@ -45,12 +63,15 @@ class Field(object):
         return len(self.cards) == 0
 
     def move(self, card, destination):
-        temp = self.cards[card]
-        destination.append(temp)
+        temp = []
+        for c in self.cards:
+            if c == card:
+                temp = c;
         self.removeCard(card)
+        destination.addCard(temp)
 
     def draw(self, n, deck):
-        temp = deck.cards.pop(n)
-        self.cards.append(temp)
+        for x in range(n):
+            self.cards.append(deck.cards.pop())
 
 
