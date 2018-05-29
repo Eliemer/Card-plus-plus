@@ -1,4 +1,4 @@
-#Card ++
+# Card ++
 
 **Introduction**
 
@@ -75,7 +75,9 @@ operate on them using Card++'s functions.
 Some functions are:
 
 Shuffle(Deck); #Shuffles the deck
+
 flip (Diamonds3); #Flips the card
+
 Draw(Deck); #Draws a card from the deck
 
 **Developers**
