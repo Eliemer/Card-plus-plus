@@ -548,15 +548,18 @@ def compare(x, y):
     print("comparing")
     return 7+7
 
-# while True:
-#     string = ''
-#     line = input("Card> ")
-#     while line != '':
-#         string += line
-#         line = input()
-#     parser.parse(string)
+while True:
+    string = ''
+    line = input("Card> ")
+    while line != '':
+        string += line
+        line = input()
+    parser.parse(string)
 
-parsing(open("test", "r"))
+#parsing(open("test", "r"))
+
+
+
 
 
 
