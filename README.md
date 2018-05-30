@@ -43,7 +43,7 @@ Card++ allows you to create your card game using the
 fifty-two casino suit cards. A card declaration in Card++
 is simple. The following is the syntax used to declare a card:
 
-Card _cardname_ = ("_value_","_suit_")
+Card _cardname_ = ("_value_","_suit_");
  
 For example, if we want to declare the three of
 diamonds, we would type the following in Card++:
