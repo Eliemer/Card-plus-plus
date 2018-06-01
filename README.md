@@ -67,7 +67,7 @@ Card++ allows you to create your card game using the
 fifty-two casino suit cards. 
 
 
-Cards:
+*Cards:
 
 A simple declaration to start creating the cards in the game.
 
@@ -82,7 +82,7 @@ A valid card declaration receives a valid value and suit
 as parameters, though we can declare the name however we want.
 
 
-Fields: 
+*Fields: 
 
 After you declare the desired number of cards, a field can be
 created to represent the different types of fields in a card
@@ -105,19 +105,19 @@ operate on them using Card++'s functions.
 
 Some functions are:
 
-Shuffle(Deck);
+*Shuffle(Deck);
 
 - Shuffles a field to randomize their order in any given field, whether
 it's a deck, a player's hand or any other pile.
 
-flip (Diamonds3);
+*flip (Diamonds3);
 
 - Toggles visibility of a card in any given field, to allow certain cards
 to be able to be viewed by a player or not, such as another player's hand,
 a card being face-down on the playing field, or simply making the deck
 invisible to players.
 
-Draw(Deck);
+*Draw(Deck);
 
 - Draws the top card from the given Field and adds it to the player's hand.
 
