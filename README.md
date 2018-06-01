@@ -21,6 +21,14 @@ For the scope of this project we will
 limit Card++ to only be able to use
 the fifty-two casino suite cards.
 
+**Tutorial**
+
+Below is a video verison of the Card++ tutorial. Make sure that you turn on the Closed Captions.
+
+[![Card++ Tutorial](https://img.youtube.com/vi/yCm0ClWMNVQ/1.jpg)](https://www.youtube.com/watch?v=yCm0ClWMNVQ "Card++ Tutorial")
+
+
+
 **Tools Used**
 
 PLY - PLY (Python Lex-Yacc) is an implementation
