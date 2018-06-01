@@ -45,6 +45,22 @@ installed in your machine with the PLY (3.10) library.
 3. Run the _Card++.py_ file on your IDE or terminal.
 4. Start using Card++.
 
+**Language Developement**
+
+The programming language was created utilizing python; the lexical
+analyzer itself along with some intermediate code are contained in 
+Card++.py. The data structures used are in the GameElements File, which 
+allows our Language to create objects such as Cards, Fields, etc.
+
+Initial development consisted of choosing keywords for users to utilize
+in the Language, creating those keywords and then building expressions 
+and functions as needed to allow them to build objects quickly and easily.
+It was assured then that all the functions a user would write could be 
+interpreted and defined in the Language to create the Cards and Fields 
+and then combined to be utilized in the Card game itself along with
+other functions to affect the Fields and Cards themselves.
+
+
 **Using Card++**
 
 Card++ allows you to create your card game using the
