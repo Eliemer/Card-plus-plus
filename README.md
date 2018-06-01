@@ -61,13 +61,17 @@ and then combined to be utilized in the Card game itself along with
 other functions to affect the Fields and Cards themselves.
 
 
-**Using Card++**
+**Card++ Reference Manual**
 
 Card++ allows you to create your card game using the
-fifty-two casino suit cards. A card declaration in Card++
-is simple. The following is the syntax used to declare a card:
+fifty-two casino suit cards. 
 
-Card _cardname_ = ("_value_","_suit_");
+
+Cards:
+
+A simple declaration to start creating the cards in the game.
+
+- Card _cardname_ = ("_value_","_suit_");
  
 For example, if we want to declare the three of
 diamonds, we would type the following in Card++:
@@ -76,6 +80,9 @@ Card Diamonds3 = ("3", "Diamonds");
 
 A valid card declaration receives a valid value and suit 
 as parameters, though we can declare the name however we want.
+
+
+Fields: 
 
 After you declare the desired number of cards, a field can be
 created to represent the different types of fields in a card
@@ -98,11 +105,22 @@ operate on them using Card++'s functions.
 
 Some functions are:
 
-Shuffle(Deck); #Shuffles the deck
+Shuffle(Deck);
 
-flip (Diamonds3); #Flips the card
+- Shuffles a field to randomize their order in any given field, whether
+it's a deck, a player's hand or any other pile.
 
-Draw(Deck); #Draws a card from the deck
+flip (Diamonds3);
+
+- Toggles visibility of a card in any given field, to allow certain cards
+to be able to be viewed by a player or not, such as another player's hand,
+a card being face-down on the playing field, or simply making the deck
+invisible to players.
+
+Draw(Deck);
+
+- Draws the top card from the given Field and adds it to the player's hand.
+
 
 **Developers**
 
