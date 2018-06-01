@@ -112,6 +112,9 @@ This project was developed by Eliemer Velez, Ariel Torres
 and Jonathan Irizarry under the supervision of Dr. Wilson
 Rivera at the University of Puerto Rico - Mayaguez Campus.
 
+A final report for this project may be found in the project, or by following this link:
+https://github.com/Eliemer/Card-plus-plus/blob/master/Card%2B%2B%20Final%20Report.pdf
+
 
 
 
